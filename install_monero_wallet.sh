@@ -1,5 +1,23 @@
 #!/bin/bash
 
+if [[ -d "./monero-gui-wallet" ]]; then
+	echo "It appears you already have the wallet downloaded."
+
+	while true; do
+	read -p "Would you like to reinstall it? (y/n) " yn
+
+	case $yn in 
+		y ) echo "Reinstalling monero wallet.";
+			rm -rf ./monero-gui-wallet/
+			break;;
+		n ) echo "Exiting.";
+			exit 0;;
+		* ) echo "Error: Invalid response, type y or n.";
+	esac
+	done
+fi
+
+
 sudo apt-get update
 
 # Install gpg if needed
@@ -32,7 +50,7 @@ gpg --verify monero_hashes.txt >/dev/null 2>&1
 if [[ $? -eq 0 ]]; then
 	echo "SUCCESS: Vaid PGP for monero wallet hashes. Continuing..."
 else
-	echo "ERROR: Invalid PGP for monero wallet hashes. Exiting."
+	echo "FAILURE: Invalid PGP for monero wallet hashes. Exiting."
 	exit 1
 fi
 
@@ -48,10 +66,10 @@ computed_hash=$(sha256sum monero-gui-linux64.tar.bz2 | awk '{print $1}')
 
 echo "Monero wallet computed hash: $computed_hash"
 
-if [ "$computed_hash" = "$MONERO_WALLET_HASH" ]; then
-	echo "Monero wallet hash verification successful. The file is intact and has not been tampered with."
+if [[ "$computed_hash" = "$MONERO_WALLET_HASH" ]]; then
+	echo "SUCCESS: Monero wallet hash verification successful. The file is intact and has not been tampered with."
 else
-	echo "Monero wallet hash verification failed. The file may be corrupted or tampered with."
+	echo "FAILURE: Monero wallet hash verification failed. The file may be corrupted or tampered with."
 	exit 1
 fi
 
