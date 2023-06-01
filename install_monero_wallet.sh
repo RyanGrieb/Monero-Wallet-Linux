@@ -2,6 +2,14 @@
 
 sudo apt-get update
 
+# Install gpg if needed
+if ! command -v gpg &>/dev/null; then
+	echo "gpg is not installed. Installing..."
+	sudo apt-get install gpg -y
+else
+	echo "gpg is already installed, continuing..."
+fi
+
 # Install bzip2 if needed
 if ! command -v bzip2 &>/dev/null; then
 	echo "bzip2 is not installed. Installing..."
@@ -30,6 +38,7 @@ fi
 
 # Extract desired wallet hash from monero_hashes.txt file
 MONERO_WALLET_HASH=$(grep "monero-gui-linux-x64-" "monero_hashes.txt" | cut -d' ' -f1)
+rm monero_hashes.txt
 
 # Download monero wallet
 wget https://downloads.getmonero.org/gui/linux64 -O monero-gui-linux64.tar.bz2
